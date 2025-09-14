@@ -1,7 +1,7 @@
 import math
 import pygame
 import random
-
+from pygame import mixer
 
 # inicializar Pygame
 pygame.init()
@@ -13,6 +13,11 @@ pantalla = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Invaders Juarez")
 icono = pygame.image.load('ovni.png')
 pygame.display.set_icon(icono)
+
+#agrgar sonidos de fondo
+mixer.music.load('fondo.mp3')
+mixer.music.set_volume(0.8)
+mixer.music.play(-1)
 
 # variables del Jugador
 img_jugador = pygame.image.load('nave-espacial.png')
@@ -46,6 +51,22 @@ bala_visible = False
 
 #puntaje
 puntaje = 0
+fuente = pygame.font.Font('freesansbold.ttf', 32)
+texto_x = 10
+texto_y = 10
+
+#texto final del juego
+
+fuente_final = pygame.font.Font('freesansbold.ttf', 40)
+
+def texto_final():
+    mi_fuente_final = fuente_final.render('JUEGO TERMINADO', True, (255, 255, 255))
+    pantalla.blit(mi_fuente_final, (60, 200))
+#funcion mostrar puntaje
+
+def mostrar_puntaje(x, y):
+    texto = fuente.render(f"Puntaje: {puntaje}", True, (255, 255, 255))
+    pantalla.blit(texto, (x, y))
 
 
 # funcion del jugador
@@ -87,6 +108,10 @@ while se_ejecuta:
             if evento.key == pygame.K_RIGHT:
                 jugador_x_cambio = 0.3
             if evento.key == pygame.K_SPACE:
+                sonido_vala = mixer.Sound('laser.mp3')
+                sonido_vala.set_volume(0.3)
+                sonido_vala.play()
+                
                 if not bala_visible:
                     bala_x = jugador_x
                     disparar_bala(bala_x, bala_y)
@@ -116,22 +141,35 @@ while se_ejecuta:
     #ubicacion del enemigo
 
     for e in range(cantidad_enemigos):
+
+        #fin del juego
+
+        if enemigo_y[e] > 500:
+            for k in range(cantidad_enemigos):
+                enemigo_y[k] = 1000
+            texto_final()
+            break
+
+
         enemigo_x[e]+= enemigo_x_cambio[e]
     # mantener bordes del enemigo
     # velocidad de movimiento
         if enemigo_x[e] <= 0:
-            enemigo_x_cambio[e] = 0.2
+            enemigo_x_cambio[e] = 0.3
             enemigo_y[e] += enemigo_y_cambio[e]
         elif enemigo_x[e] >= 736:
-            enemigo_x_cambio[e] = -0.2
+            enemigo_x_cambio[e] = -0.3
             enemigo_y[e] += enemigo_y_cambio[e]
+
+
         # colision
         colision = hay_colicion(enemigo_x[e], enemigo_y[e], bala_x, bala_y)
         if colision:
+            sonido_colision = mixer.Sound('golpe.mp3')
+            sonido_colision.play()
             bala_y = 500
             bala_visible = False
             puntaje += 1
-            print(puntaje)
             enemigo_x[e] = random.randint(0, 736)
             enemigo_y[e] = random.randint(50, 200)
         enemigo(enemigo_x[e], enemigo_y[e], e)
@@ -145,6 +183,6 @@ while se_ejecuta:
         bala_y -= bala_y_cambio
 
 
-
+    mostrar_puntaje(texto_x, texto_y)
     # actualizacion
     pygame.display.update()
