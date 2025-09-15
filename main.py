@@ -61,7 +61,7 @@ fuente_final = pygame.font.Font('freesansbold.ttf', 40)
 
 def texto_final():
     mi_fuente_final = fuente_final.render('JUEGO TERMINADO', True, (255, 255, 255))
-    pantalla.blit(mi_fuente_final, (60, 200))
+    pantalla.blit(mi_fuente_final, (200, 200))
 #funcion mostrar puntaje
 
 def mostrar_puntaje(x, y):
@@ -95,7 +95,7 @@ def hay_colicion(x_1, y_1, x_2, y_2):
 se_ejecuta = True
 while se_ejecuta:
     # RGB
-    pantalla.fill((0, 255, 230))
+    pantalla.fill((0, 0, 0))
 # eventos
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
